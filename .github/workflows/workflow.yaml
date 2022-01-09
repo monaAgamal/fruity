@@ -1,0 +1,55 @@
+name: Super-linter
+
+on: 
+   push:
+    branches:
+      - master
+   pull_request:
+     
+ jobs:
+    unit-test:
+      name: unit tests on push
+      runs-on: ${{ matrix.os }}
+      strategy: 
+        matrix:
+          os: [ubuntu-18.04, windows-2019, macos-10.15]
+
+  
+      steps: 
+        - name: clone flutter repo with master channel 
+        uses: subosito/flutter-action@4389e6cbc6cb8a4b18c628ff96ff90be0e926aa8
+        with:
+          channel: master 
+        - run: flutter doctor -v 
+        ###########
+        - name: checkout source code 
+          uses: actions/checkout@v2
+        - run: flutter pub get -v 
+        ## analyze and check formatting 
+        - run: flutter analyze 
+        - name: ensure that dart code is formatted correctly
+        - run: flutter format --set-exit-if-changed --dry-run
+        - name: run flutter unit tests
+        - run: flutter test
+		build: 
+			name: build apk 
+			runs-on: ubuntu-latest 
+			steps:
+			- uses: actions/checkout@v1
+			- uses: actions/setup-java@v1
+				with: 
+					java-version: '12.x'
+		  - uses: subosito/flutter-action@v1
+			  with : 
+					flutter-version: '2.2.0'
+			- run: flutter pub get
+			- run: flutter format --set-exit-if-changed
+			- run: flutter analyze 
+			- run: flutter test 
+			- run: flutter build apk --split ber abi 
+				- uses: actions/upload-artifact@v1
+					with: 
+					 name: release-apk
+					 path: build/app/outputs/apk/release/app-release.apk  
+			
+ 
