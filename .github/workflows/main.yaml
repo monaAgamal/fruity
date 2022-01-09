@@ -27,7 +27,7 @@ jobs:
         uses: VeryGoodOpenSource/very_good_coverage@v1.2.0
 
       - name: build apk
-        uses: actions/upload-artifact@v1
+        # uses: actions/upload-artifact@v1
         run: flutter build apk
         with:
           java-version: '11'
